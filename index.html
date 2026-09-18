@@ -49,7 +49,7 @@ function auditLog(action,detail){let a=JSON.parse(localStorage.getItem('antiPila
 function oneTap(){pin.value='1234';pin.focus()}
 function signIn(){
  if(pin.value!=='1234'){alert('Incorrect demo PIN');return}
- if(role.value==='Encoder'){sessionStorage.setItem('antiPilaRole','Encoder');location.href='encoder-upload.html';return}
+ if(role.value==='Encoder'){sessionStorage.setItem('antiPilaRole','Encoder');location.href='encoder-list.html';return}
  who.textContent=role.value;sessionStorage.setItem('antiPilaRole',role.value);login.classList.add('hidden');app.classList.remove('hidden');closeM()
 }
 function logout(){sessionStorage.removeItem('antiPilaRole');pin.value='';app.classList.add('hidden');login.classList.remove('hidden')}
