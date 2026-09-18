@@ -6,8 +6,8 @@
 <title>Encoder Workspace</title>
 <style>
 :root{--n:#09274a;--g:#d8ad4b;--c:#fffaf0;--ink:#10233d;--ok:#1e6d44;--bad:#9c2d3d}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#06162c,#0d3a68);min-height:100vh;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:10px;align-items:center}.back{color:#fff;text-decoration:none;font-weight:800}.box{background:var(--c);color:var(--ink);border-radius:24px;padding:20px;margin-top:16px}.demo{background:#fff1c9;border:2px solid var(--g);padding:12px;border-radius:13px;font-weight:800;color:#604b19}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.stat,.card{background:#fff;border:1px solid #e5dcc9;border-radius:14px;padding:13px}.stat b{display:block;font-size:22px;color:var(--n)}select,input{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:11px;margin:6px 0}.drop{border:3px dashed var(--g);background:#fff;border-radius:18px;padding:22px;text-align:center}.realfile{display:block;width:100%;padding:14px;background:#fff;border:2px solid #d8ad4b;border-radius:12px;margin:14px 0;color:#10233d;font-size:16px;min-height:58px;cursor:pointer}.realfile::file-selector-button{border:0;border-radius:10px;background:#d8ad4b;color:#17263a;padding:12px 14px;font-weight:900;margin-right:10px;cursor:pointer}.btn,.picker{display:inline-block;border:0;border-radius:12px;background:var(--n);color:#fff;padding:13px 15px;font-weight:800;cursor:pointer;margin:3px;text-decoration:none}.gold,.picker{background:var(--g);color:#17263a}.danger{background:#8b2430}.okbtn{background:#1e6d44}.muted{color:#68778a;font-size:12px}.status{display:inline-block;padding:6px 9px;border-radius:999px;background:#fff1c9;color:#604b19;font-weight:800;font-size:11px}.status.ok{background:#e8f7ed;color:#1e6d44}.status.bad{background:#fdecef;color:#8b2430}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;background:#fff;min-width:700px}th,td{padding:10px;border-bottom:1px solid #e8e8e8;text-align:left;font-size:13px}th{background:#eef3f8}.badrow{background:#fff0f0}.okrow{background:#eff9f1}.log{font-size:12px;border-left:3px solid var(--g);padding:7px 10px;margin:6px 0;background:#fff}.actions{display:flex;gap:6px;flex-wrap:wrap}.mapping{background:#eef3f8;border-radius:14px;padding:14px;margin:12px 0}.receipt{border:2px solid var(--g);background:#fff;padding:18px;border-radius:16px}.sectionTitle{margin-top:24px}.resume{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.empty{background:#fff;padding:14px;border-radius:12px;color:#68778a}
-@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.top{flex-direction:column;align-items:flex-start}.picker,.btn.mobile{display:block;width:100%}.resume{grid-template-columns:1fr}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#06162c,#0d3a68);min-height:100vh;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:10px;align-items:center}.back{color:#fff;text-decoration:none;font-weight:800}.box{background:var(--c);color:var(--ink);border-radius:24px;padding:20px;margin-top:16px}.demo{background:#fff1c9;border:2px solid var(--g);padding:12px;border-radius:13px;font-weight:800;color:#604b19}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.stat,.card{background:#fff;border:1px solid #e5dcc9;border-radius:14px;padding:13px}.stat b{display:block;font-size:22px;color:var(--n)}select,input{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:11px;margin:6px 0}.drop{border:3px dashed var(--g);background:#fff;border-radius:18px;padding:22px;text-align:center}.realfile{display:block;width:100%;padding:14px;background:#fff;border:2px solid #d8ad4b;border-radius:12px;margin:14px 0;color:#10233d;font-size:16px;min-height:58px;cursor:pointer}.realfile::file-selector-button{border:0;border-radius:10px;background:#d8ad4b;color:#17263a;padding:12px 14px;font-weight:900;margin-right:10px;cursor:pointer}.btn,.picker{display:inline-block;border:0;border-radius:12px;background:var(--n);color:#fff;padding:13px 15px;font-weight:800;cursor:pointer;margin:3px;text-decoration:none}.gold,.picker{background:var(--g);color:#17263a}.danger{background:#8b2430}.okbtn{background:#1e6d44}.muted{color:#68778a;font-size:12px}.status{display:inline-block;padding:6px 9px;border-radius:999px;background:#fff1c9;color:#604b19;font-weight:800;font-size:11px}.status.ok{background:#e8f7ed;color:#1e6d44}.status.bad{background:#fdecef;color:#8b2430}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;background:#fff;min-width:700px}th,td{padding:10px;border-bottom:1px solid #e8e8e8;text-align:left;font-size:13px}th{background:#eef3f8}.badrow{background:#fff0f0}.okrow{background:#eff9f1}.log{font-size:12px;border-left:3px solid var(--g);padding:7px 10px;margin:6px 0;background:#fff}.actions{display:flex;gap:6px;flex-wrap:wrap}.mapping{background:#eef3f8;border-radius:14px;padding:14px;margin:12px 0}.receipt{border:2px solid var(--g);background:#fff;padding:18px;border-radius:16px}.sectionTitle{margin-top:24px}.resume{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.empty{background:#fff;padding:14px;border-radius:12px;color:#68778a}.batchbox{background:#f4f7fa;border:1px solid #d7e0e9;border-radius:16px;padding:14px;margin:14px 0}.batchgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.batchbox textarea{width:100%;min-height:80px;padding:13px;border:1px solid #ccd5df;border-radius:11px;margin:6px 0;font:inherit}.selectionbar{display:flex;gap:7px;flex-wrap:wrap;align-items:center;background:#eef3f8;border-radius:14px;padding:10px;margin-top:10px}.issue{display:block;color:#8b2430;font-size:11px;font-weight:700;margin-top:3px}.checkcell{width:42px;text-align:center}
+@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.batchgrid{grid-template-columns:1fr}.top{flex-direction:column;align-items:flex-start}.picker,.btn.mobile{display:block;width:100%}.resume{grid-template-columns:1fr}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
@@ -30,6 +30,18 @@
 <label><b>Payout Program</b></label>
 <select id="program"></select>
 
+<div class="batchbox" id="batchDetails">
+<h3 style="margin:0 0 8px">Batch Details</h3>
+<div class="batchgrid">
+<div><label><b>Payout Date</b></label><input id="batchDate" type="date"></div>
+<div><label><b>Amount / Benefit</b></label><input id="batchAmount" placeholder="e.g. ₱3,000"></div>
+<div><label><b>Venue</b></label><input id="batchVenue" placeholder="Payout venue"></div>
+<div><label><b>Source Office</b></label><input id="batchOffice" placeholder="Office / Department"></div>
+</div>
+<label><b>Batch Description / Remarks</b></label>
+<textarea id="batchRemarks" placeholder="Optional notes for this payout batch"></textarea>
+</div>
+
 <div class="actions">
 <button class="btn gold" onclick="newManualBatch()">+ NEW MANUAL BATCH</button>
 <button class="btn" onclick="addManualRow()">+ ADD BENEFICIARY</button>
@@ -51,6 +63,13 @@
 <div id="tools" style="display:none">
 <input id="search" placeholder="Search name, ID, area, or batch" oninput="renderRows()">
 <select id="filter" onchange="renderRows()"><option value="ALL">All Records</option><option value="VALID">Valid</option><option value="REVIEW">Needs Review</option><option value="DUPLICATE">Duplicates</option></select>
+<div class="selectionbar">
+<b id="selectedCount">0 selected</b>
+<button class="btn" type="button" onclick="selectVisible()">SELECT VISIBLE</button>
+<button class="btn" type="button" onclick="clearSelection()">CLEAR</button>
+<button class="btn" type="button" onclick="validateSelected()">VALIDATE SELECTED</button>
+<button class="btn danger" type="button" onclick="deleteSelected()">DELETE SELECTED</button>
+</div>
 </div>
 
 <div id="preview"></div>
@@ -71,7 +90,7 @@
 <script>
 if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
 
-let rows=[],rawHeaders=[],rawData=[],currentFile='',currentType='',batchNo='',dirty=false;
+let rows=[],rawHeaders=[],rawData=[],currentFile='',currentType='',batchNo='',dirty=false; let selectedRows=new Set(),visibleRowIndexes=[];
 let hist=JSON.parse(localStorage.getItem('encoderDemoHistory')||'[]');
 let acts=JSON.parse(localStorage.getItem('encoderDemoActs')||'[]');
 let drafts=JSON.parse(localStorage.getItem('encoderDrafts')||'[]');
@@ -83,6 +102,16 @@ function loadPrograms(){let p=JSON.parse(localStorage.getItem('antiPilaPrograms'
 let programs=loadPrograms();
 
 function getProgram(){return programs.find(x=>x.id===program.value)||programs[0]}
+function getBatchDetails(){return{date:batchDate.value||'',amount:batchAmount.value.trim(),venue:batchVenue.value.trim(),office:batchOffice.value.trim(),remarks:batchRemarks.value.trim()}}
+function applyBatchDetails(d){
+ d=d||{};let p=getProgram();
+ batchDate.value=d.date||(/^\d{4}-\d{2}-\d{2}$/.test(String(p.date||''))?p.date:'');
+ batchAmount.value=d.amount||((p.amount&&p.amount!=='Program-defined')?p.amount:'');
+ batchVenue.value=d.venue||((p.venue&&p.venue!=='Official payout venue')?p.venue:'');
+ batchOffice.value=d.office||p.office||'';
+ batchRemarks.value=d.remarks||''
+}
+function batchDetailsReady(){let d=getBatchDetails();return !!(d.date&&d.venue&&d.office)}
 function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
 function dashboard(){
  draftCount.textContent=drafts.filter(d=>d.status==='DRAFT').length;
@@ -97,7 +126,7 @@ function nextBatch(){let all=hist.concat(drafts);let nums=all.map(x=>Number(Stri
 function makeKey(id,i){return batchNo+'-'+(id||'ROW'+(i+1))+'-'+i}
 function saveDraft(){
  if(!batchNo)return;
- let d=drafts.find(x=>x.batch===batchNo),payload={batch:batchNo,file:currentFile||'Manual Entry',type:currentType||'MANUAL',programId:getProgram().id,programName:getProgram().name,rows:rows,status:'DRAFT',updatedAt:new Date().toLocaleString()};
+ let d=drafts.find(x=>x.batch===batchNo),payload={batch:batchNo,file:currentFile||'Manual Entry',type:currentType||'MANUAL',programId:getProgram().id,programName:getProgram().name,rows:rows,details:getBatchDetails(),status:'DRAFT',updatedAt:new Date().toLocaleString()};
  if(d)Object.assign(d,payload);else drafts.unshift(payload);saveAll();dashboard()
 }
 function removeDraft(batch){drafts=drafts.filter(x=>x.batch!==batch);saveAll();dashboard()}
@@ -114,7 +143,7 @@ document.querySelector('.drop').addEventListener('drop',e=>{e.preventDefault();c
 function handle(x){
  if(!x)return;let ext=(x.name.split('.').pop()||'').toLowerCase();
  if(!['pdf','xlsx','xls','csv'].includes(ext)){alert('Choose PDF, Excel, or CSV.');return}
- currentFile=x.name;currentType=ext.toUpperCase();batchNo=nextBatch();rows=[];rawHeaders=[];rawData=[];receipt.innerHTML='';dirty=false;
+ currentFile=x.name;currentType=ext.toUpperCase();batchNo=nextBatch();rows=[];rawHeaders=[];rawData=[];selectedRows.clear();receipt.innerHTML='';dirty=false;applyBatchDetails({});
  if(ext==='csv'){let r=new FileReader();r.onload=()=>parseCSV(r.result,x);r.readAsText(x)}
  else if(ext==='xlsx'||ext==='xls'){parseExcel(x)}
  else parsePDF(x);
@@ -242,7 +271,7 @@ async function parsePDF(x){
 }
 
 function newManualBatch(){
- currentFile='Manual Entry';currentType='MANUAL';batchNo=nextBatch();rows=[];mapping.innerHTML='';rawPreview.innerHTML='';receipt.innerHTML='';showCurrent();saveDraft();openHistory('MANUAL DRAFT');log('Created '+batchNo)
+ currentFile='Manual Entry';currentType='MANUAL';batchNo=nextBatch();rows=[];selectedRows.clear();applyBatchDetails({});mapping.innerHTML='';rawPreview.innerHTML='';receipt.innerHTML='';showCurrent();saveDraft();openHistory('MANUAL DRAFT');log('Created '+batchNo)
 }
 function addManualRow(){
  if(!batchNo)newManualBatch();
@@ -254,20 +283,33 @@ function addManualRow(){
 }
 
 function markDuplicates(){
- let existing=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]'),seen={};
- rows.forEach(r=>{r.state=r.name?'VALID':'REVIEW'});
- rows.forEach(r=>{
-  let key=r.generatedId
-    ? ('name:'+String(r.name||'').trim().toLowerCase()+'|'+String(r.area||'').trim().toLowerCase())
-    : ('id:'+String(r.id||'').trim().toLowerCase());
-  if(!key||key==='id:'||key==='name:|')return;
-  if(seen[key]){r.state='DUPLICATE';seen[key].state='DUPLICATE'}else seen[key]=r;
-  let ext=existing.find(v=>{
-    if(v.batch===batchNo)return false;
-    if(r.generatedId)return String(v.name||'').trim().toLowerCase()===String(r.name||'').trim().toLowerCase()&&String(v.area||'').trim().toLowerCase()===String(r.area||'').trim().toLowerCase();
-    return String(v.id||'').trim().toLowerCase()===String(r.id||'').trim().toLowerCase()
-  });
-  if(ext)r.state='DUPLICATE'
+ let existing=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]');
+ let seenId={},seenNameArea={};
+ rows.forEach((r,i)=>{
+   r.name=String(r.name||'').trim();r.id=String(r.id||'').trim();r.area=String(r.area||'').trim();
+   r.issues=[];r.state='VALID';
+   if(!r.name){r.issues.push('Missing beneficiary name');r.state='REVIEW'}
+   else if(r.name.length<3||!/[A-Za-zÀ-ÿ]/.test(r.name)){r.issues.push('Check beneficiary name');r.state='REVIEW'}
+   if(!r.area){r.issues.push('Missing barangay / area');if(r.state==='VALID')r.state='REVIEW'}
+   if(!r.id){r.issues.push('Missing ID / control number');if(r.state==='VALID')r.state='REVIEW'}
+
+   let idKey=r.id.toLowerCase();
+   if(idKey){
+     if(seenId[idKey]){r.issues.push('Duplicate ID in this batch');r.state='DUPLICATE';seenId[idKey].issues.push('Duplicate ID in this batch');seenId[idKey].state='DUPLICATE'}
+     else seenId[idKey]=r;
+     if(existing.some(v=>v.batch!==batchNo&&String(v.id||'').trim().toLowerCase()===idKey)){r.issues.push('ID already exists in another batch');r.state='DUPLICATE'}
+   }
+
+   let na=(r.name+'|'+r.area).toLowerCase();
+   if(r.name&&r.area){
+     if(seenNameArea[na]&&seenNameArea[na].id!==r.id){
+       r.issues.push('Possible duplicate name + area');if(r.state==='VALID')r.state='REVIEW';
+       seenNameArea[na].issues.push('Possible duplicate name + area');if(seenNameArea[na].state==='VALID')seenNameArea[na].state='REVIEW'
+     } else if(!seenNameArea[na]) seenNameArea[na]=r;
+     if(existing.some(v=>v.batch!==batchNo&&String(v.name||'').trim().toLowerCase()===r.name.toLowerCase()&&String(v.area||'').trim().toLowerCase()===r.area.toLowerCase()&&String(v.id||'').trim().toLowerCase()!==idKey)){
+       r.issues.push('Possible existing beneficiary with same name + area');if(r.state==='VALID')r.state='REVIEW'
+     }
+   }
  })
 }
 function showCurrent(){
@@ -278,23 +320,40 @@ function showCurrent(){
 function renderRows(){
  markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;tools.style.display=rows.length?'block':'none';
  let q=(search.value||'').toLowerCase(),fv=filter.value,list=rows.map((r,i)=>({r,i})).filter(o=>(fv==='ALL'||o.r.state===fv)&&(!q||(o.r.name+' '+o.r.id+' '+o.r.area+' '+batchNo).toLowerCase().includes(q)));
- preview.innerHTML=rows.length?'<div class="tablewrap"><table><thead><tr><th>Status</th><th>Name</th><th>ID / Control</th><th>Area</th><th>Action</th></tr></thead><tbody>'+list.map(o=>'<tr class="'+(o.r.state==='VALID'?'okrow':'badrow')+'"><td>'+e(o.r.state)+'</td><td>'+e(o.r.name)+'</td><td>'+e(o.r.id)+'</td><td>'+e(o.r.area)+'</td><td><button class="btn" onclick="editRow('+o.i+')">EDIT</button><button class="btn danger" onclick="deleteRow('+o.i+')">DELETE</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No beneficiary rows yet.</div>';
+ visibleRowIndexes=list.map(o=>o.i);
+ preview.innerHTML=rows.length?'<div class="tablewrap"><table><thead><tr><th class="checkcell"><input type="checkbox" onchange="toggleSelectAll(this.checked)"></th><th>Status</th><th>Name</th><th>ID / Control</th><th>Area</th><th>Issues</th><th>Action</th></tr></thead><tbody>'+list.map(o=>'<tr class="'+(o.r.state==='VALID'?'okrow':'badrow')+'"><td class="checkcell"><input type="checkbox" '+(selectedRows.has(o.i)?'checked':'')+' onchange="toggleSelect('+o.i+',this.checked)"></td><td>'+e(o.r.state)+'</td><td>'+e(o.r.name)+'</td><td>'+e(o.r.id)+'</td><td>'+e(o.r.area)+'</td><td>'+(o.r.issues&&o.r.issues.length?o.r.issues.map(v=>'<span class="issue">• '+e(v)+'</span>').join(''):'—')+'</td><td><button class="btn" onclick="editRow('+o.i+')">EDIT</button><button class="btn danger" onclick="deleteRow('+o.i+')">DELETE</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No beneficiary rows yet.</div>';
  if(summary.innerHTML){let label=summary.querySelector('b:last-of-type');if(label)label.textContent=rows.length+' records • '+(rows.length-bad)+' valid • '+bad+' need review'}
- dashboard()
+ updateSelectionBar();dashboard()
+}
+function updateSelectionBar(){if(typeof selectedCount!=='undefined')selectedCount.textContent=selectedRows.size+' selected'}
+function toggleSelect(i,on){if(on)selectedRows.add(i);else selectedRows.delete(i);updateSelectionBar()}
+function toggleSelectAll(on){visibleRowIndexes.forEach(i=>on?selectedRows.add(i):selectedRows.delete(i));renderRows()}
+function selectVisible(){visibleRowIndexes.forEach(i=>selectedRows.add(i));renderRows()}
+function clearSelection(){selectedRows.clear();renderRows()}
+function deleteSelected(){
+ if(!selectedRows.size){alert('Select at least one beneficiary first.');return}
+ if(!confirm('Delete '+selectedRows.size+' selected record(s) from this draft?'))return;
+ [...selectedRows].sort((a,b)=>b-a).forEach(i=>rows.splice(i,1));selectedRows.clear();dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Deleted selected beneficiary records')
+}
+function validateSelected(){
+ if(!selectedRows.size){alert('Select at least one beneficiary first.');return}
+ markDuplicates();let chosen=[...selectedRows].map(i=>rows[i]).filter(Boolean),bad=chosen.filter(r=>r.state!=='VALID');
+ renderRows();alert(bad.length?bad.length+' selected record(s) need review. Check the Issues column.':'All '+chosen.length+' selected record(s) passed validation.')
 }
 function editRow(i){
  let r=rows[i],n=prompt('Beneficiary name',r.name);if(n===null)return;let id=prompt('ID / Control number',r.id);if(id===null)return;let a=prompt('Area / Barangay',r.area);if(a===null)return;
  r.name=n.trim();r.id=id.trim();r.area=a.trim();r.state=(r.name&&r.id)?'VALID':'REVIEW';dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Edited row '+(i+1))
 }
-function deleteRow(i){if(!confirm('Delete this row from the draft batch?'))return;rows.splice(i,1);dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Deleted draft row')}
+function deleteRow(i){if(!confirm('Delete this row from the draft batch?'))return;rows.splice(i,1);selectedRows.clear();dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Deleted draft row')}
 function validateRows(){markDuplicates();saveDraft();openHistory('VALIDATED');renderRows();log('Validated '+rows.length+' records')}
 
 function submitVerifier(){
  if(!rows.length){alert('Add beneficiary records first.');return}
+ if(!batchDetailsReady()){alert('Complete Payout Date, Venue, and Source Office before submitting.');return}
  markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;if(bad){alert('Fix the '+bad+' record(s) marked NEEDS REVIEW or DUPLICATE first.');return}
  if(!confirm(rows.length+' records will be submitted to the Verifier. Continue?'))return;
  let prog=getProgram(),vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]'),existing=vb.find(b=>b.batch===batchNo);
- let batch={batch:batchNo,file:currentFile||'Manual Entry',programId:prog.id,programName:prog.name,rows:rows.map(r=>({name:r.name,id:r.id,area:r.area,recordKey:r.recordKey})),status:existing&&existing.status==='RETURNED'?'RESUBMITTED':'FOR VERIFICATION',submittedAt:new Date().toLocaleString(),submittedDay:todayKey(),returnReason:''};
+ let batch={batch:batchNo,file:currentFile||'Manual Entry',programId:prog.id,programName:prog.name,details:getBatchDetails(),rows:rows.map(r=>({name:r.name,id:r.id,area:r.area,recordKey:r.recordKey})),status:existing&&existing.status==='RETURNED'?'RESUBMITTED':'FOR VERIFICATION',submittedAt:new Date().toLocaleString(),submittedDay:todayKey(),returnReason:''};
  if(existing)Object.assign(existing,batch);else vb.unshift(batch);localStorage.setItem('encoderVerifierBatches',JSON.stringify(vb));
  let all=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]');
  all=all.filter(v=>v.batch!==batchNo);
@@ -302,7 +361,7 @@ function submitVerifier(){
  localStorage.setItem('antiPilaBeneficiaries',JSON.stringify(all));
  hist=hist.filter(h=>h.batch!==batchNo);hist.unshift({batch:batchNo,file:currentFile||'Manual Entry',program:prog.name,programId:prog.id,count:rows.length,valid:rows.length,review:0,status:batch.status==='RESUBMITTED'?'RESUBMITTED':'SUBMITTED TO VERIFIER',time:batch.submittedAt,day:todayKey()});
  removeDraft(batchNo);saveAll();dirty=false;renderHistory();dashboard();
- receipt.innerHTML='<div class="receipt"><span class="status ok">SUBMISSION RECEIPT</span><h2>'+e(batchNo)+'</h2><p><b>Program:</b> '+e(prog.name)+'</p><p><b>Beneficiaries:</b> '+rows.length+'</p><p><b>Encoder:</b> Demo Encoder</p><p><b>Date/Time:</b> '+e(batch.submittedAt)+'</p><p><b>Status:</b> '+e(batch.status)+'</p><button class="btn" onclick="window.print()">PRINT RECEIPT</button></div>';
+ receipt.innerHTML='<div class="receipt"><span class="status ok">SUBMISSION RECEIPT</span><h2>'+e(batchNo)+'</h2><p><b>Program:</b> '+e(prog.name)+'</p><p><b>Payout Date:</b> '+e(getBatchDetails().date)+'</p><p><b>Venue:</b> '+e(getBatchDetails().venue)+'</p><p><b>Source Office:</b> '+e(getBatchDetails().office)+'</p><p><b>Beneficiaries:</b> '+rows.length+'</p><p><b>Encoder:</b> Demo Encoder</p><p><b>Date/Time:</b> '+e(batch.submittedAt)+'</p><p><b>Status:</b> '+e(batch.status)+'</p><button class="btn" onclick="window.print()">PRINT RECEIPT</button></div>';
  summary.innerHTML='<div class="card"><span class="status ok">'+e(batch.status)+'</span><h3>'+e(currentFile||'Manual Entry')+'</h3><b>'+e(batchNo)+'</b><p class="muted">Locked and handed to Verifier.</p></div>';preview.innerHTML='';tools.style.display='none';log('Submitted '+batchNo+' to Verifier')
 }
 
@@ -315,7 +374,7 @@ function renderDrafts(){
 function resumeBatch(batch,kind){
  let source;if(kind==='RETURNED'){let vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]');source=vb.find(b=>b.batch===batch)}else source=drafts.find(d=>d.batch===batch);
  if(!source)return;batchNo=source.batch;currentFile=source.file||'Returned Batch';currentType=source.type||'BATCH';rows=(source.rows||[]).map((r,i)=>Object.assign({},r,{recordKey:r.recordKey||makeKey(r.id,i)}));
- let idx=programs.findIndex(p=>p.id===source.programId);if(idx>=0)program.selectedIndex=idx;
+ let idx=programs.findIndex(p=>p.id===source.programId);if(idx>=0)program.selectedIndex=idx;applyBatchDetails(source.details||{});selectedRows.clear();
  mapping.innerHTML='';rawPreview.innerHTML='';receipt.innerHTML='';showCurrent();dirty=true;window.scrollTo({top:0,behavior:'smooth'});log('Resumed '+batch)
 }
 function renderHistory(){
@@ -329,10 +388,11 @@ function downloadErrors(){
 window.addEventListener('beforeunload',ev=>{if(dirty){ev.preventDefault();ev.returnValue=''}});
 function resetDemo(){
  if(!confirm('Clear Encoder draft/history demo data? Submitted payout records will stay unless you reset the whole browser storage.'))return;
- rows=[];hist=[];acts=[];drafts=[];batchNo='';currentFile='';currentType='';localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');localStorage.removeItem('encoderDrafts');summary.innerHTML='';preview.innerHTML='';receipt.innerHTML='';mapping.innerHTML='';rawPreview.innerHTML='';tools.style.display='none';saveAll();renderHistory();dashboard()
+ rows=[];hist=[];acts=[];drafts=[];selectedRows.clear();batchNo='';currentFile='';currentType='';applyBatchDetails({});localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');localStorage.removeItem('encoderDrafts');summary.innerHTML='';preview.innerHTML='';receipt.innerHTML='';mapping.innerHTML='';rawPreview.innerHTML='';tools.style.display='none';saveAll();renderHistory();dashboard()
 }
-program.addEventListener('change',()=>{if(batchNo){saveDraft();showCurrent()}});
-renderHistory();dashboard();
+program.addEventListener('change',()=>{if(!batchNo)applyBatchDetails({});else{saveDraft();showCurrent()}});
+['batchDate','batchAmount','batchVenue','batchOffice','batchRemarks'].forEach(id=>document.getElementById(id).addEventListener('change',()=>{if(batchNo)saveDraft()}));
+applyBatchDetails({});renderHistory();dashboard();
 </script>
 </body>
 </html>
