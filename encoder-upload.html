@@ -136,16 +136,52 @@ function parseCSV(txt,x){
 function optList(selectedGuess){
  let s='<option value="-1">Not mapped</option>';rawHeaders.forEach((h,i)=>s+='<option value="'+i+'" '+(i===selectedGuess?'selected':'')+'>'+e(h)+'</option>');return s
 }
-function guess(re){return rawHeaders.findIndex(h=>re.test(String(h).toLowerCase()))}
+function normHeader(v){return String(v||'').trim().toLowerCase().replace(/[^a-z0-9]+/g,' ').replace(/\s+/g,' ').trim()}
+function guessHeader(names){
+ let wanted=names.map(normHeader);
+ return rawHeaders.findIndex(h=>wanted.includes(normHeader(h)))
+}
 function showMapping(name,type){
- currentFile=name;currentType=type;let ni=guess(/name|pangalan|beneficiary/),ii=guess(/id|control|reference|osca/),ai=guess(/area|barangay|address/);
- mapping.innerHTML='<div class="mapping"><h3>Confirm Field Mapping</h3><p class="muted">Tell the Encoder which uploaded columns contain each required field.</p><label>Name</label><select id="mapName">'+optList(ni)+'</select><label>ID / Control Number</label><select id="mapId">'+optList(ii)+'</select><label>Area / Barangay</label><select id="mapArea">'+optList(ai)+'</select><button class="btn gold" onclick="applyMapping()">APPLY MAPPING</button></div>';
+ currentFile=name;currentType=type;
+ let full=guessHeader(['full name','fullname','beneficiary name','name','pangalan']);
+ let sur=guessHeader(['surname','last name','lastname','family name']);
+ let first=guessHeader(['first name','firstname','given name','given names']);
+ let middle=guessHeader(['middle name','middlename','middle initial']);
+ let suffix=guessHeader(['suffix','extension','name extension']);
+ let ii=guessHeader(['id','id number','beneficiary id','control number','control no','reference number','reference no','osca id','osca id number']);
+ let ai=guessHeader(['area','barangay','brgy','address']);
+ mapping.innerHTML='<div class="mapping"><h3>Confirm Field Mapping</h3><p class="muted">Use either one Full Name column, or map the separate Surname / First / Middle Name columns. ID / Control Number is optional; if none exists, the system will create an internal control number for this batch.</p>'+
+ '<label>Full Name <span class="muted">(optional)</span></label><select id="mapFull">'+optList(full)+'</select>'+
+ '<div style="text-align:center;font-weight:900;margin:8px 0">OR SEPARATE NAME COLUMNS</div>'+
+ '<label>Surname</label><select id="mapSurname">'+optList(sur)+'</select>'+
+ '<label>First Name</label><select id="mapFirst">'+optList(first)+'</select>'+
+ '<label>Middle Name <span class="muted">(optional)</span></label><select id="mapMiddle">'+optList(middle)+'</select>'+
+ '<label>Suffix <span class="muted">(optional)</span></label><select id="mapSuffix">'+optList(suffix)+'</select>'+
+ '<label>ID / Control Number <span class="muted">(optional)</span></label><select id="mapId">'+optList(ii)+'</select>'+
+ '<label>Area / Barangay</label><select id="mapArea">'+optList(ai)+'</select>'+
+ '<button class="btn gold" onclick="applyMapping()">APPLY MAPPING</button></div>';
  summary.innerHTML='';preview.innerHTML='';tools.style.display='none';openHistory('MAPPING REQUIRED');log('Opened '+name+' for field mapping')
 }
+function buildMappedName(a,full,sur,first,middle,suffix){
+ if(full>=0&&String(a[full]||'').trim())return String(a[full]||'').trim();
+ let s=sur>=0?String(a[sur]||'').trim():'';
+ let f=first>=0?String(a[first]||'').trim():'';
+ let m=middle>=0?String(a[middle]||'').trim():'';
+ let x=suffix>=0?String(a[suffix]||'').trim():'';
+ if(s&&f)return (s+', '+[f,m,x].filter(Boolean).join(' ')).trim();
+ return [f,m,s,x].filter(Boolean).join(' ').trim()
+}
 function applyMapping(){
- let ni=Number(mapName.value),ii=Number(mapId.value),ai=Number(mapArea.value);
- if(ni<0||ii<0){alert('Map both Name and ID / Control Number.');return}
- rows=rawData.map((a,k)=>({name:String(a[ni]||'').trim(),id:String(a[ii]||'').trim(),area:ai>=0?String(a[ai]||'').trim():'',state:'VALID',recordKey:makeKey(String(a[ii]||''),k)})).filter(r=>r.name||r.id||r.area);
+ let full=Number(mapFull.value),sur=Number(mapSurname.value),first=Number(mapFirst.value),middle=Number(mapMiddle.value),suffix=Number(mapSuffix.value),ii=Number(mapId.value),ai=Number(mapArea.value);
+ if(full<0&&(sur<0||first<0)){alert('Choose a Full Name column OR map both Surname and First Name.');return}
+ rows=rawData.map((a,k)=>{
+   let name=buildMappedName(a,full,sur,first,middle,suffix);
+   let externalId=ii>=0?String(a[ii]||'').trim():'';
+   let generated=!externalId;
+   let id=externalId||('AUTO-'+batchNo.replace(/[^A-Z0-9]/gi,'')+'-'+String(k+1).padStart(4,'0'));
+   let area=ai>=0?String(a[ai]||'').trim():'';
+   return{name,id,area,state:name?'VALID':'REVIEW',recordKey:makeKey(id,k),generatedId:generated}
+ }).filter(r=>r.name||r.area);
  mapping.innerHTML='';showCurrent();saveDraft();log('Applied field mapping to '+rows.length+' records')
 }
 async function parsePDF(x){
@@ -177,11 +213,18 @@ function addManualRow(){
 
 function markDuplicates(){
  let existing=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]'),seen={};
- rows.forEach(r=>{r.state=(r.name&&r.id)?'VALID':'REVIEW'});
+ rows.forEach(r=>{r.state=r.name?'VALID':'REVIEW'});
  rows.forEach(r=>{
-  let k=String(r.id||'').trim().toLowerCase();if(!k)return;
-  if(seen[k]){r.state='DUPLICATE';seen[k].state='DUPLICATE'}else seen[k]=r;
-  let ext=existing.find(v=>String(v.id||'').trim().toLowerCase()===k&&v.batch!==batchNo);
+  let key=r.generatedId
+    ? ('name:'+String(r.name||'').trim().toLowerCase()+'|'+String(r.area||'').trim().toLowerCase())
+    : ('id:'+String(r.id||'').trim().toLowerCase());
+  if(!key||key==='id:'||key==='name:|')return;
+  if(seen[key]){r.state='DUPLICATE';seen[key].state='DUPLICATE'}else seen[key]=r;
+  let ext=existing.find(v=>{
+    if(v.batch===batchNo)return false;
+    if(r.generatedId)return String(v.name||'').trim().toLowerCase()===String(r.name||'').trim().toLowerCase()&&String(v.area||'').trim().toLowerCase()===String(r.area||'').trim().toLowerCase();
+    return String(v.id||'').trim().toLowerCase()===String(r.id||'').trim().toLowerCase()
+  });
   if(ext)r.state='DUPLICATE'
  })
 }
