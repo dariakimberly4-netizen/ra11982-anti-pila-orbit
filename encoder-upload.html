@@ -46,6 +46,7 @@
 </div>
 
 <div id="mapping"></div>
+<div id="rawPreview"></div>
 <div id="summary"></div>
 
 <div id="tools" style="display:none">
@@ -160,7 +161,24 @@ function showMapping(name,type){
  '<label>ID / Control Number <span class="muted">(optional)</span></label><select id="mapId">'+optList(ii)+'</select>'+
  '<label>Area / Barangay</label><select id="mapArea">'+optList(ai)+'</select>'+
  '<button class="btn gold" onclick="applyMapping()">APPLY MAPPING</button></div>';
+ renderUploadedList(full,sur,first,middle,suffix,ii,ai);
  summary.innerHTML='';preview.innerHTML='';tools.style.display='none';openHistory('MAPPING REQUIRED');log('Opened '+name+' for field mapping')
+}
+function renderUploadedList(full,sur,first,middle,suffix,ii,ai){
+ let list=rawData.map((a,k)=>{
+  let name=buildMappedName(a,full,sur,first,middle,suffix);
+  if(!name){
+   let vals=a.map(v=>String(v||'').trim()).filter(Boolean);
+   name=vals.slice(0,3).join(' ');
+  }
+  let id=ii>=0?String(a[ii]||'').trim():'';
+  let area=ai>=0?String(a[ai]||'').trim():'';
+  return{name,id,area,no:k+1}
+ }).filter(r=>r.name||r.id||r.area);
+ rawPreview.innerHTML='<div class="card"><span class="status">'+list.length+' RECORDS FOUND</span><h2 style="margin-bottom:4px">Uploaded Beneficiary List</h2><p class="muted">This list appears immediately when the file opens. Confirm the mapping above before submission.</p></div>'+
+ (list.length?'<div class="tablewrap"><table><thead><tr><th>#</th><th>Name</th><th>ID / Control</th><th>Area / Barangay</th></tr></thead><tbody>'+
+ list.map(r=>'<tr><td>'+r.no+'</td><td><b>'+e(r.name)+'</b></td><td>'+e(r.id||'Auto after mapping')+'</td><td>'+e(r.area||'—')+'</td></tr>').join('')+
+ '</tbody></table></div>':'<div class="empty">No rows found in this file.</div>')
 }
 function buildMappedName(a,full,sur,first,middle,suffix){
  if(full>=0&&String(a[full]||'').trim())return String(a[full]||'').trim();
@@ -182,7 +200,7 @@ function applyMapping(){
    let area=ai>=0?String(a[ai]||'').trim():'';
    return{name,id,area,state:name?'VALID':'REVIEW',recordKey:makeKey(id,k),generatedId:generated}
  }).filter(r=>r.name||r.area);
- mapping.innerHTML='';showCurrent();saveDraft();log('Applied field mapping to '+rows.length+' records')
+ mapping.innerHTML='';rawPreview.innerHTML='';showCurrent();saveDraft();log('Applied field mapping to '+rows.length+' records')
 }
 async function parsePDF(x){
  if(!window.pdfjsLib){alert('PDF reader is still loading. Please try again.');return}
@@ -200,7 +218,7 @@ async function parsePDF(x){
 }
 
 function newManualBatch(){
- currentFile='Manual Entry';currentType='MANUAL';batchNo=nextBatch();rows=[];mapping.innerHTML='';receipt.innerHTML='';showCurrent();saveDraft();openHistory('MANUAL DRAFT');log('Created '+batchNo)
+ currentFile='Manual Entry';currentType='MANUAL';batchNo=nextBatch();rows=[];mapping.innerHTML='';rawPreview.innerHTML='';receipt.innerHTML='';showCurrent();saveDraft();openHistory('MANUAL DRAFT');log('Created '+batchNo)
 }
 function addManualRow(){
  if(!batchNo)newManualBatch();
@@ -274,7 +292,7 @@ function resumeBatch(batch,kind){
  let source;if(kind==='RETURNED'){let vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]');source=vb.find(b=>b.batch===batch)}else source=drafts.find(d=>d.batch===batch);
  if(!source)return;batchNo=source.batch;currentFile=source.file||'Returned Batch';currentType=source.type||'BATCH';rows=(source.rows||[]).map((r,i)=>Object.assign({},r,{recordKey:r.recordKey||makeKey(r.id,i)}));
  let idx=programs.findIndex(p=>p.id===source.programId);if(idx>=0)program.selectedIndex=idx;
- mapping.innerHTML='';receipt.innerHTML='';showCurrent();dirty=true;window.scrollTo({top:0,behavior:'smooth'});log('Resumed '+batch)
+ mapping.innerHTML='';rawPreview.innerHTML='';receipt.innerHTML='';showCurrent();dirty=true;window.scrollTo({top:0,behavior:'smooth'});log('Resumed '+batch)
 }
 function renderHistory(){
  history.innerHTML=hist.length?hist.slice(0,30).map(h=>'<div class="card"><span class="status '+(h.status==='SUBMITTED TO VERIFIER'||h.status==='RESUBMITTED'?'ok':'')+'">'+e(h.status)+'</span><b style="display:block;margin-top:6px">'+e(h.batch||'BATCH')+' • '+e(h.file)+'</b><span class="muted">'+e(h.program)+'<br>'+h.count+' records • '+(h.valid||0)+' valid • '+(h.review||0)+' review<br>'+e(h.time)+'</span></div>').join(''):'<div class="empty">No Encoder history yet.</div>'
@@ -287,7 +305,7 @@ function downloadErrors(){
 window.addEventListener('beforeunload',ev=>{if(dirty){ev.preventDefault();ev.returnValue=''}});
 function resetDemo(){
  if(!confirm('Clear Encoder draft/history demo data? Submitted payout records will stay unless you reset the whole browser storage.'))return;
- rows=[];hist=[];acts=[];drafts=[];batchNo='';currentFile='';currentType='';localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');localStorage.removeItem('encoderDrafts');summary.innerHTML='';preview.innerHTML='';receipt.innerHTML='';mapping.innerHTML='';tools.style.display='none';saveAll();renderHistory();dashboard()
+ rows=[];hist=[];acts=[];drafts=[];batchNo='';currentFile='';currentType='';localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');localStorage.removeItem('encoderDrafts');summary.innerHTML='';preview.innerHTML='';receipt.innerHTML='';mapping.innerHTML='';rawPreview.innerHTML='';tools.style.display='none';saveAll();renderHistory();dashboard()
 }
 program.addEventListener('change',()=>{if(batchNo){saveDraft();showCurrent()}});
 renderHistory();dashboard();
