@@ -1,1 +1,249 @@
-<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Encoder Import Demo</title><style>:root{--n:#09274a;--g:#d8ad4b;--c:#fffaf0;--ink:#10233d}*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#06162c,#0d3a68);min-height:100vh;color:#fff}.app{max-width:900px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:10px}.back{color:#fff;text-decoration:none;font-weight:800}.box{background:var(--c);color:var(--ink);border-radius:24px;padding:20px;margin-top:16px}.demo{background:#fff1c9;border:2px solid var(--g);padding:12px;border-radius:13px;font-weight:800;color:#604b19}.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin:14px 0}.stat,.card{background:#fff;border:1px solid #e5dcc9;border-radius:14px;padding:13px}.stat b{display:block;font-size:22px;color:var(--n)}select,input{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:11px;margin:6px 0}.drop{border:3px dashed var(--g);background:#fff;border-radius:18px;padding:22px;text-align:center}.realfile{position:absolute;width:1px;height:1px;opacity:.01}.btn,.picker{display:inline-block;border:0;border-radius:12px;background:var(--n);color:#fff;padding:13px 15px;font-weight:800;cursor:pointer;margin:3px;text-decoration:none}.gold,.picker{background:var(--g);color:#17263a}.danger{background:#8b2430}.muted{color:#68778a;font-size:12px}.status{display:inline-block;padding:6px 9px;border-radius:999px;background:#fff1c9;color:#604b19;font-weight:800;font-size:11px}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;background:#fff;min-width:650px}th,td{padding:10px;border-bottom:1px solid #e8e8e8;text-align:left;font-size:13px}th{background:#eef3f8}.bad{background:#fff0f0}.ok{background:#eff9f1}.log{font-size:12px;border-left:3px solid var(--g);padding:7px 10px;margin:6px 0;background:#fff}@media(max-width:650px){.grid{grid-template-columns:1fr 1fr}.top{flex-direction:column}.picker{display:block;width:100%}}</style><script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script></head><body><main class="app"><div class="top"><a class="back" href="index.html">← BACK TO ORBIT</a><span class="status">ENCODER • DEMO ONLY</span></div><section class="box"><h1>Encoder Import Workspace</h1><div class="grid"><div class="stat"><b id="records">0</b>Records</div><div class="stat"><b id="errors">0</b>Needs Review</div></div><span id="valid" style="display:none">0</span><span id="imports" style="display:none">0</span><label><b>Payout Program</b></label><select id="program"><option>Demo Senior Citizen Cash Benefit</option><option>Demo Financial Assistance Payout</option><option>Demo Employee Benefit / Allowance</option><option>Demo Special Assistance Program</option></select><div class="drop"><div style="font-size:38px">📊</div><b>PDF • XLSX • XLS • CSV</b><br><br><input class="realfile" id="file" type="file" accept=".pdf,.xlsx,.xls,.csv,application/pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"><label class="picker" for="file">CHOOSE FILE FROM PHONE</label><p class="muted">Choose a sample PDF, Excel, or CSV file.</p></div><div id="summary"></div><div id="tools" style="display:none"><input id="search" placeholder="Search name or ID" oninput="renderRows()"><select id="filter" onchange="renderRows()"><option value="ALL">All Records</option><option value="VALID">Valid</option><option value="REVIEW">Needs Review</option><option value="DUPLICATE">Duplicates</option></select></div><div id="preview"></div><h2>Important History</h2><p class="muted">Every file opened by the Encoder appears here immediately.</p><div id="history"></div><div id="logs" style="display:none"></div><button class="btn danger" onclick="resetDemo()">RESET DEMO</button></section></main><script>let dirty=false,batchNo='';let rows=[],acts=JSON.parse(localStorage.getItem('encoderDemoActs')||'[]'),hist=JSON.parse(localStorage.getItem('encoderDemoHistory')||'[]'),currentFile='';const f=document.getElementById('file');f.addEventListener('change',()=>handle(f.files[0]));function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}function saveDemo(){localStorage.setItem('encoderDemoActs',JSON.stringify(acts));localStorage.setItem('encoderDemoHistory',JSON.stringify(hist))}function log(s){acts.unshift(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+' — '+s);saveDemo();renderLogs()}function csvLine(s){let a=[],v='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c=='"'){if(q&&s[i+1]=='"'){v+='"';i++}else q=!q}else if(c==','&&!q){a.push(v.trim());v=''}else v+=c}a.push(v.trim());return a}function handle(x){if(!x)return;let ext=(x.name.split('.').pop()||'').toLowerCase();if(!['pdf','xlsx','xls','csv'].includes(ext)){alert('Choose PDF, Excel, or CSV.');return}if(ext==='csv'){let r=new FileReader();r.onload=()=>parseCSV(r.result,x);r.readAsText(x)}else if(ext==='xlsx'||ext==='xls'){parseExcel(x)}else{rows=[];show(x.name,'PDF',true)}}function extLabel(n){return (n.split('.').pop()||'EXCEL').toUpperCase()} function parseExcel(x){if(typeof XLSX==='undefined'){alert('Excel reader is still loading. Please try again.');return}let r=new FileReader();r.onload=()=>{try{let wb=XLSX.read(r.result,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});if(data.length<2){alert('Excel sheet has no data rows.');return}let hi=data.findIndex((a,i)=>i<20&&a.some(v=>/name|pangalan|beneficiary/i.test(String(v))));if(hi<0)hi=0;let h=data[hi].map(z=>String(z).trim().toLowerCase()),ni=h.findIndex(z=>/name|pangalan|beneficiary/.test(z)),ii=h.findIndex(z=>/id|control|reference|osca/.test(z)),ai=h.findIndex(z=>/area|barangay|address/.test(z));rows=data.slice(hi+1,hi+201).filter(a=>a.some(v=>String(v).trim())).map((a,k)=>{let name=ni>=0?a[ni]:a[0],id=ii>=0?a[ii]:(a[1]||'ROW-'+String(k+1).padStart(3,'0')),area=ai>=0?a[ai]:(a[2]||'');name=String(name||'').trim();id=String(id||'').trim();area=String(area||'').trim();return{name,id,area,state:(name&&id)?'VALID':'REVIEW'}});show(x.name,extLabel(x.name),false)}catch(err){alert('Could not read this Excel file. Try saving it as XLSX or CSV.')}};r.readAsArrayBuffer(x);setTimeout(()=>{f.value=''},100)} function parseCSV(txt,x){let lines=String(txt).split(/\r?\n/).filter(z=>z.trim());if(lines.length<2){alert('CSV has no data rows.');return}let h=csvLine(lines[0]).map(z=>z.toLowerCase());let ni=h.findIndex(z=>/name/.test(z)),ii=h.findIndex(z=>/id|control|reference/.test(z)),ai=h.findIndex(z=>/area|barangay|address/.test(z));rows=lines.slice(1,51).map((z,k)=>{let c=csvLine(z),name=ni>=0?c[ni]:c[0],id=ii>=0?c[ii]:(c[1]||'DEMO-'+String(k+1).padStart(3,'0')),area=ai>=0?c[ai]:(c[2]||'');return{name:name||'',id:id||'',area:area||'',state:(name&&id)?'VALID':'REVIEW'}});show(x.name,'CSV',false)}function show(name,type,sample){currentFile=name;batchNo='BATCH-'+new Date().getFullYear()+'-'+String(hist.length+1).padStart(3,'0');dirty=false;let bad=rows.filter(r=>r.state==='REVIEW').length;summary.innerHTML='<div class="card"><span class="status">DRAFT IMPORT</span><h3>'+e(name)+'</h3><b>'+e(batchNo)+'</b><p class="muted">'+type+' • '+e(program.value)+(sample?' • DEMO ROW PREVIEW':' • Parsed locally')+'</p><b>'+rows.length+' records • '+(rows.length-bad)+' valid • '+bad+' need review</b><br><br><button class="btn" onclick="validateRows()">VALIDATE</button><button class="btn gold" onclick="approveImport()">SUBMIT TO VERIFIER</button><button class="btn" onclick="downloadErrors()">DOWNLOAD ERROR LIST</button></div>';renderRows();let h={file:name,program:program.value,count:rows.length,valid:rows.length-bad,review:bad,status:'OPENED',time:new Date().toLocaleString()};h.batch=batchNo;hist.unshift(h);saveDemo();renderHistory();log('Opened '+name)}function markDuplicates(){let seen={};rows.forEach(r=>{if(r.state==='DUPLICATE')r.state='VALID';let k=String(r.id||'').trim().toLowerCase();if(k){if(seen[k]){r.state='DUPLICATE';seen[k].state='DUPLICATE'}else seen[k]=r}})}function renderRows(){markDuplicates();records.textContent=rows.length;valid.textContent=rows.filter(r=>r.state==='VALID').length;errors.textContent=rows.filter(r=>r.state!=='VALID').length;tools.style.display=rows.length?'block':'none';let q=(search.value||'').toLowerCase(),fv=filter.value;let list=rows.map((r,i)=>({r,i})).filter(o=>(fv==='ALL'||o.r.state===fv)&&(!q||(o.r.name+' '+o.r.id+' '+o.r.area).toLowerCase().includes(q)));preview.innerHTML=rows.length?'<div class="tablewrap"><table><thead><tr><th>Status</th><th>Name</th><th>ID / Control</th><th>Area</th><th>Action</th></tr></thead><tbody>'+list.map(o=>'<tr class="'+(o.r.state==='VALID'?'ok':'bad')+'"><td>'+o.r.state+'</td><td>'+e(o.r.name)+'</td><td>'+e(o.r.id)+'</td><td>'+e(o.r.area)+'</td><td><button class="btn" onclick="editRow('+o.i+')">EDIT</button></td></tr>').join('')+'</tbody></table></div>':''}function editRow(i){let r=rows[i];if(r.locked){alert('This batch was submitted to the Verifier and is locked.');return}let n=prompt('Demo beneficiary name',r.name);if(n===null)return;let id=prompt('ID / Control number',r.id);if(id===null)return;let a=prompt('Area / Barangay',r.area);if(a===null)return;r.name=n.trim();r.id=id.trim();r.area=a.trim();r.state=(r.name&&r.id)?'VALID':'REVIEW';dirty=true;renderRows();log('Edited demo row '+(i+1))}function validateRows(){rows.forEach(r=>r.state=(r.name&&r.id)?'VALID':'REVIEW');let h=hist.find(x=>x.file===currentFile);if(h){h.valid=rows.filter(r=>r.state==='VALID').length;h.review=rows.filter(r=>r.state==='REVIEW').length;h.status='VALIDATED';h.time=new Date().toLocaleString()}saveDemo();renderRows();renderHistory();log('Validated '+rows.length+' demo records')}function approveImport(){if(!rows.length)return;if(!confirm(rows.length+' records will be submitted to the Verifier. Continue?'))return;markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;if(bad){alert('Fix the '+bad+' record(s) marked NEEDS REVIEW or DUPLICATE first.');return}let h=hist.find(x=>x.file===currentFile);if(h){h.status='IMPORTED';h.count=rows.length;h.valid=rows.length;h.review=0;h.time=new Date().toLocaleString()}saveDemo();renderHistory();log('Approved demo import of '+rows.length+' records');summary.querySelector('.status').textContent='SUBMITTED TO VERIFIER';rows.forEach(r=>r.locked=true);dirty=false;let h2=hist.find(x=>x.file===currentFile);if(h2){h2.status='SUBMITTED TO VERIFIER';h2.time=new Date().toLocaleString()}saveDemo();renderHistory()}function renderHistory(){imports.textContent=hist.filter(h=>h.status==='IMPORTED').reduce((a,b)=>a+(b.count||0),0);history.innerHTML=hist.length?hist.map(h=>'<div class="card"><span class="status">'+e(h.status)+'</span><b style="display:block;margin-top:6px">'+e(h.batch||'BATCH')+' • '+e(h.file)+'</b><span class="muted">'+e(h.program)+'<br>'+h.count+' records • '+(h.valid||0)+' valid • '+(h.review||0)+' review<br>'+e(h.time)+'</span></div>').join(''):'<div class="card"><span class="status">WAITING</span><b style="display:block;margin-top:6px">No file opened yet</b><span class="muted">Choose an Excel, CSV, or PDF file above. It will appear here immediately.</span></div>'}function renderLogs(){logs.innerHTML=acts.length?acts.map(a=>'<div class="log">'+e(a)+'</div>').join(''):'<p class="muted">No activity yet.</p>'}function downloadErrors(){let bad=rows.filter(r=>r.state!=='VALID');if(!bad.length){alert('No error records to export.');return}let csv='Status,Name,ID,Area\n'+bad.map(r=>[r.state,r.name,r.id,r.area].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n');let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=(batchNo||'batch')+'-errors.csv';a.click();URL.revokeObjectURL(a.href)}window.addEventListener('beforeunload',e=>{if(dirty){e.preventDefault();e.returnValue=''}});function resetDemo(){if(confirm('Clear demo import data?')){rows=[];acts=[];hist=[];localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');summary.innerHTML='';preview.innerHTML='';renderHistory();records.textContent=valid.textContent=errors.textContent=imports.textContent='0';renderLogs()}}renderHistory();renderLogs();</script></body></html>
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Encoder Workspace</title>
+<style>
+:root{--n:#09274a;--g:#d8ad4b;--c:#fffaf0;--ink:#10233d;--ok:#1e6d44;--bad:#9c2d3d}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:linear-gradient(145deg,#06162c,#0d3a68);min-height:100vh;color:#fff}.app{max-width:980px;margin:auto;padding:18px}.top{display:flex;justify-content:space-between;gap:10px;align-items:center}.back{color:#fff;text-decoration:none;font-weight:800}.box{background:var(--c);color:var(--ink);border-radius:24px;padding:20px;margin-top:16px}.demo{background:#fff1c9;border:2px solid var(--g);padding:12px;border-radius:13px;font-weight:800;color:#604b19}.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}.stat,.card{background:#fff;border:1px solid #e5dcc9;border-radius:14px;padding:13px}.stat b{display:block;font-size:22px;color:var(--n)}select,input{width:100%;padding:13px;border:1px solid #ccd5df;border-radius:11px;margin:6px 0}.drop{border:3px dashed var(--g);background:#fff;border-radius:18px;padding:22px;text-align:center}.realfile{position:absolute;width:1px;height:1px;opacity:.01}.btn,.picker{display:inline-block;border:0;border-radius:12px;background:var(--n);color:#fff;padding:13px 15px;font-weight:800;cursor:pointer;margin:3px;text-decoration:none}.gold,.picker{background:var(--g);color:#17263a}.danger{background:#8b2430}.okbtn{background:#1e6d44}.muted{color:#68778a;font-size:12px}.status{display:inline-block;padding:6px 9px;border-radius:999px;background:#fff1c9;color:#604b19;font-weight:800;font-size:11px}.status.ok{background:#e8f7ed;color:#1e6d44}.status.bad{background:#fdecef;color:#8b2430}.tablewrap{overflow:auto;margin-top:12px}table{width:100%;border-collapse:collapse;background:#fff;min-width:700px}th,td{padding:10px;border-bottom:1px solid #e8e8e8;text-align:left;font-size:13px}th{background:#eef3f8}.badrow{background:#fff0f0}.okrow{background:#eff9f1}.log{font-size:12px;border-left:3px solid var(--g);padding:7px 10px;margin:6px 0;background:#fff}.actions{display:flex;gap:6px;flex-wrap:wrap}.mapping{background:#eef3f8;border-radius:14px;padding:14px;margin:12px 0}.receipt{border:2px solid var(--g);background:#fff;padding:18px;border-radius:16px}.sectionTitle{margin-top:24px}.resume{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center}.empty{background:#fff;padding:14px;border-radius:12px;color:#68778a}
+@media(max-width:760px){.grid{grid-template-columns:1fr 1fr}.top{flex-direction:column;align-items:flex-start}.picker,.btn.mobile{display:block;width:100%}.resume{grid-template-columns:1fr}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<main class="app">
+<div class="top"><a class="back" href="index.html">← BACK TO LOGIN / ORBIT</a><span class="status">ENCODER • DEMO SYSTEM</span></div>
+
+<section class="box">
+<h1>Encoder Workspace</h1>
+<p class="muted">Upload, validate, correct, and submit payout beneficiaries to the Verifier.</p>
+
+<div class="grid">
+<div class="stat"><b id="draftCount">0</b>Draft Batches</div>
+<div class="stat"><b id="reviewCount">0</b>Needs Review</div>
+<div class="stat"><b id="submittedCount">0</b>Submitted Today</div>
+<div class="stat"><b id="returnedCount">0</b>Returned</div>
+</div>
+
+<label><b>Payout Program</b></label>
+<select id="program"></select>
+
+<div class="actions">
+<button class="btn gold" onclick="newManualBatch()">+ NEW MANUAL BATCH</button>
+<button class="btn" onclick="addManualRow()">+ ADD BENEFICIARY</button>
+</div>
+
+<div class="drop">
+<div style="font-size:38px">📊</div>
+<b>PDF • XLSX • XLS • CSV</b><br><br>
+<input class="realfile" id="file" type="file" accept=".pdf,.xlsx,.xls,.csv,application/pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+<label class="picker" for="file">CHOOSE FILE FROM PHONE</label>
+<p class="muted">Excel/CSV uses field mapping. PDF text extraction runs locally in your browser.</p>
+</div>
+
+<div id="mapping"></div>
+<div id="summary"></div>
+
+<div id="tools" style="display:none">
+<input id="search" placeholder="Search name, ID, area, or batch" oninput="renderRows()">
+<select id="filter" onchange="renderRows()"><option value="ALL">All Records</option><option value="VALID">Valid</option><option value="REVIEW">Needs Review</option><option value="DUPLICATE">Duplicates</option></select>
+</div>
+
+<div id="preview"></div>
+<div id="receipt"></div>
+
+<h2 class="sectionTitle">Resume Draft / Returned Batch</h2>
+<div id="drafts"></div>
+
+<h2 class="sectionTitle">Important History</h2>
+<p class="muted">Every file opened or manual batch created appears here.</p>
+<div id="history"></div>
+
+<button class="btn danger" onclick="resetDemo()">RESET ENCODER DEMO DATA</button>
+</section>
+</main>
+
+<script>
+if(window.pdfjsLib){pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js'}
+
+let rows=[],rawHeaders=[],rawData=[],currentFile='',currentType='',batchNo='',dirty=false;
+let hist=JSON.parse(localStorage.getItem('encoderDemoHistory')||'[]');
+let acts=JSON.parse(localStorage.getItem('encoderDemoActs')||'[]');
+let drafts=JSON.parse(localStorage.getItem('encoderDrafts')||'[]');
+const f=document.getElementById('file');
+
+function e(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function saveAll(){localStorage.setItem('encoderDemoHistory',JSON.stringify(hist));localStorage.setItem('encoderDemoActs',JSON.stringify(acts));localStorage.setItem('encoderDrafts',JSON.stringify(drafts))}
+function loadPrograms(){let p=JSON.parse(localStorage.getItem('antiPilaPrograms')||'[]');if(!p.length)p=[{id:'P-001',name:'Senior Citizen Cash Benefit',office:'Social Services / OSCA',amount:'Program-defined',date:'Official payout date',venue:'Official payout venue'}];program.innerHTML=p.map(x=>'<option value="'+e(x.id)+'">'+e(x.name)+'</option>').join('');return p}
+let programs=loadPrograms();
+
+function getProgram(){return programs.find(x=>x.id===program.value)||programs[0]}
+function todayKey(){let d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+function dashboard(){
+ draftCount.textContent=drafts.filter(d=>d.status==='DRAFT').length;
+ reviewCount.textContent=drafts.reduce((n,d)=>n+(d.rows||[]).filter(r=>r.state!=='VALID').length,0);
+ submittedCount.textContent=hist.filter(h=>(h.status==='SUBMITTED TO VERIFIER'||h.status==='RESUBMITTED')&&h.day===todayKey()).length;
+ let vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]');returnedCount.textContent=vb.filter(b=>b.status==='RETURNED').length;
+ renderDrafts()
+}
+function log(s){acts.unshift(new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})+' — '+s);saveAll()}
+function csvLine(s){let a=[],v='',q=false;for(let i=0;i<s.length;i++){let c=s[i];if(c=='"'){if(q&&s[i+1]=='"'){v+='"';i++}else q=!q}else if(c==','&&!q){a.push(v.trim());v=''}else v+=c}a.push(v.trim());return a}
+function nextBatch(){let all=hist.concat(drafts);let nums=all.map(x=>Number(String(x.batch||'').split('-').pop())||0);return 'BATCH-'+new Date().getFullYear()+'-'+String((Math.max(0,...nums)+1)).padStart(3,'0')}
+function makeKey(id,i){return batchNo+'-'+(id||'ROW'+(i+1))+'-'+i}
+function saveDraft(){
+ if(!batchNo)return;
+ let d=drafts.find(x=>x.batch===batchNo),payload={batch:batchNo,file:currentFile||'Manual Entry',type:currentType||'MANUAL',programId:getProgram().id,programName:getProgram().name,rows:rows,status:'DRAFT',updatedAt:new Date().toLocaleString()};
+ if(d)Object.assign(d,payload);else drafts.unshift(payload);saveAll();dashboard()
+}
+function removeDraft(batch){drafts=drafts.filter(x=>x.batch!==batch);saveAll();dashboard()}
+function openHistory(status){
+ let h=hist.find(x=>x.batch===batchNo);
+ let bad=rows.filter(r=>r.state!=='VALID').length;
+ let data={file:currentFile||'Manual Entry',program:getProgram().name,programId:getProgram().id,count:rows.length,valid:rows.length-bad,review:bad,status:status||'OPENED',time:new Date().toLocaleString(),day:todayKey(),batch:batchNo};
+ if(h)Object.assign(h,data);else hist.unshift(data);saveAll();renderHistory()
+}
+f.addEventListener('change',()=>handle(f.files[0]));
+
+function handle(x){
+ if(!x)return;let ext=(x.name.split('.').pop()||'').toLowerCase();
+ if(!['pdf','xlsx','xls','csv'].includes(ext)){alert('Choose PDF, Excel, or CSV.');return}
+ currentFile=x.name;currentType=ext.toUpperCase();batchNo=nextBatch();rows=[];rawHeaders=[];rawData=[];receipt.innerHTML='';dirty=false;
+ if(ext==='csv'){let r=new FileReader();r.onload=()=>parseCSV(r.result,x);r.readAsText(x)}
+ else if(ext==='xlsx'||ext==='xls'){parseExcel(x)}
+ else parsePDF(x);
+}
+
+function parseExcel(x){
+ if(typeof XLSX==='undefined'){alert('Excel reader is still loading. Please try again.');return}
+ let r=new FileReader();r.onload=()=>{try{
+  let wb=XLSX.read(r.result,{type:'array'}),ws=wb.Sheets[wb.SheetNames[0]],data=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+  if(data.length<2){alert('Excel sheet has no data rows.');return}
+  let hi=data.findIndex((a,i)=>i<20&&a.some(v=>/name|pangalan|beneficiary|control|id/i.test(String(v))));if(hi<0)hi=0;
+  rawHeaders=data[hi].map((z,i)=>String(z).trim()||('Column '+(i+1)));rawData=data.slice(hi+1).filter(a=>a.some(v=>String(v).trim())).slice(0,1000);
+  showMapping(x.name,'EXCEL');
+ }catch(err){alert('Could not read this Excel file. Try saving it as XLSX or CSV.')}};r.readAsArrayBuffer(x);f.value=''
+}
+function parseCSV(txt,x){
+ let lines=String(txt).split(/\r?\n/).filter(z=>z.trim());if(lines.length<2){alert('CSV has no data rows.');return}
+ rawHeaders=csvLine(lines[0]).map((z,i)=>z||('Column '+(i+1)));rawData=lines.slice(1).map(csvLine).slice(0,1000);showMapping(x.name,'CSV');f.value=''
+}
+function optList(selectedGuess){
+ let s='<option value="-1">Not mapped</option>';rawHeaders.forEach((h,i)=>s+='<option value="'+i+'" '+(i===selectedGuess?'selected':'')+'>'+e(h)+'</option>');return s
+}
+function guess(re){return rawHeaders.findIndex(h=>re.test(String(h).toLowerCase()))}
+function showMapping(name,type){
+ currentFile=name;currentType=type;let ni=guess(/name|pangalan|beneficiary/),ii=guess(/id|control|reference|osca/),ai=guess(/area|barangay|address/);
+ mapping.innerHTML='<div class="mapping"><h3>Confirm Field Mapping</h3><p class="muted">Tell the Encoder which uploaded columns contain each required field.</p><label>Name</label><select id="mapName">'+optList(ni)+'</select><label>ID / Control Number</label><select id="mapId">'+optList(ii)+'</select><label>Area / Barangay</label><select id="mapArea">'+optList(ai)+'</select><button class="btn gold" onclick="applyMapping()">APPLY MAPPING</button></div>';
+ summary.innerHTML='';preview.innerHTML='';tools.style.display='none';openHistory('MAPPING REQUIRED');log('Opened '+name+' for field mapping')
+}
+function applyMapping(){
+ let ni=Number(mapName.value),ii=Number(mapId.value),ai=Number(mapArea.value);
+ if(ni<0||ii<0){alert('Map both Name and ID / Control Number.');return}
+ rows=rawData.map((a,k)=>({name:String(a[ni]||'').trim(),id:String(a[ii]||'').trim(),area:ai>=0?String(a[ai]||'').trim():'',state:'VALID',recordKey:makeKey(String(a[ii]||''),k)})).filter(r=>r.name||r.id||r.area);
+ mapping.innerHTML='';showCurrent();saveDraft();log('Applied field mapping to '+rows.length+' records')
+}
+async function parsePDF(x){
+ if(!window.pdfjsLib){alert('PDF reader is still loading. Please try again.');return}
+ try{
+  let buf=await x.arrayBuffer(),pdf=await pdfjsLib.getDocument({data:buf}).promise,lines=[];
+  for(let n=1;n<=Math.min(pdf.numPages,50);n++){let page=await pdf.getPage(n),tc=await page.getTextContent(),text=tc.items.map(i=>i.str).join(' ');text.split(/\s{2,}|\n/).forEach(z=>{z=z.trim();if(z)lines.push(z)})}
+  let parsed=[];lines.forEach((line,i)=>{
+    let parts=line.split(/\s*\|\s*|\t+|,\s*/).filter(Boolean);
+    if(parts.length>=2&&!/name|beneficiary|control|barangay/i.test(line)){parsed.push({name:parts[0]||'',id:parts[1]||('PDF-'+String(i+1).padStart(3,'0')),area:parts.slice(2).join(' '),state:'VALID'})}
+  });
+  if(!parsed.length){alert('PDF text was found, but rows could not be mapped reliably. Start a manual batch or use Excel/CSV for best results.');newManualBatch();return}
+  rows=parsed.slice(0,1000).map((r,i)=>Object.assign(r,{recordKey:makeKey(r.id,i)}));showCurrent();saveDraft();openHistory('PDF EXTRACTED');log('Extracted '+rows.length+' possible PDF rows')
+ }catch(err){alert('Could not extract this PDF. Try Excel/CSV or manual entry.')}
+ f.value=''
+}
+
+function newManualBatch(){
+ currentFile='Manual Entry';currentType='MANUAL';batchNo=nextBatch();rows=[];mapping.innerHTML='';receipt.innerHTML='';showCurrent();saveDraft();openHistory('MANUAL DRAFT');log('Created '+batchNo)
+}
+function addManualRow(){
+ if(!batchNo)newManualBatch();
+ let name=prompt('Beneficiary full name','');if(name===null)return;
+ let id=prompt('ID / Control number','');if(id===null)return;
+ let area=prompt('Area / Barangay','');if(area===null)return;
+ rows.push({name:name.trim(),id:id.trim(),area:area.trim(),state:(name.trim()&&id.trim())?'VALID':'REVIEW',recordKey:makeKey(id,rows.length)});
+ dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Added manual beneficiary')
+}
+
+function markDuplicates(){
+ let existing=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]'),seen={};
+ rows.forEach(r=>{r.state=(r.name&&r.id)?'VALID':'REVIEW'});
+ rows.forEach(r=>{
+  let k=String(r.id||'').trim().toLowerCase();if(!k)return;
+  if(seen[k]){r.state='DUPLICATE';seen[k].state='DUPLICATE'}else seen[k]=r;
+  let ext=existing.find(v=>String(v.id||'').trim().toLowerCase()===k&&v.batch!==batchNo);
+  if(ext)r.state='DUPLICATE'
+ })
+}
+function showCurrent(){
+ markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;
+ summary.innerHTML='<div class="card"><span class="status">DRAFT IMPORT</span><h3>'+e(currentFile||'Manual Entry')+'</h3><b>'+e(batchNo)+'</b><p class="muted">'+e(currentType)+' • '+e(getProgram().name)+'</p><b>'+rows.length+' records • '+(rows.length-bad)+' valid • '+bad+' need review</b><div class="actions" style="margin-top:12px"><button class="btn" onclick="validateRows()">VALIDATE</button><button class="btn gold" onclick="submitVerifier()">SUBMIT TO VERIFIER</button><button class="btn" onclick="downloadErrors()">DOWNLOAD ERROR LIST</button></div></div>';
+ renderRows()
+}
+function renderRows(){
+ markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;tools.style.display=rows.length?'block':'none';
+ let q=(search.value||'').toLowerCase(),fv=filter.value,list=rows.map((r,i)=>({r,i})).filter(o=>(fv==='ALL'||o.r.state===fv)&&(!q||(o.r.name+' '+o.r.id+' '+o.r.area+' '+batchNo).toLowerCase().includes(q)));
+ preview.innerHTML=rows.length?'<div class="tablewrap"><table><thead><tr><th>Status</th><th>Name</th><th>ID / Control</th><th>Area</th><th>Action</th></tr></thead><tbody>'+list.map(o=>'<tr class="'+(o.r.state==='VALID'?'okrow':'badrow')+'"><td>'+e(o.r.state)+'</td><td>'+e(o.r.name)+'</td><td>'+e(o.r.id)+'</td><td>'+e(o.r.area)+'</td><td><button class="btn" onclick="editRow('+o.i+')">EDIT</button><button class="btn danger" onclick="deleteRow('+o.i+')">DELETE</button></td></tr>').join('')+'</tbody></table></div>':'<div class="empty">No beneficiary rows yet.</div>';
+ if(summary.innerHTML){let label=summary.querySelector('b:last-of-type');if(label)label.textContent=rows.length+' records • '+(rows.length-bad)+' valid • '+bad+' need review'}
+ dashboard()
+}
+function editRow(i){
+ let r=rows[i],n=prompt('Beneficiary name',r.name);if(n===null)return;let id=prompt('ID / Control number',r.id);if(id===null)return;let a=prompt('Area / Barangay',r.area);if(a===null)return;
+ r.name=n.trim();r.id=id.trim();r.area=a.trim();r.state=(r.name&&r.id)?'VALID':'REVIEW';dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Edited row '+(i+1))
+}
+function deleteRow(i){if(!confirm('Delete this row from the draft batch?'))return;rows.splice(i,1);dirty=true;renderRows();saveDraft();openHistory('DRAFT');log('Deleted draft row')}
+function validateRows(){markDuplicates();saveDraft();openHistory('VALIDATED');renderRows();log('Validated '+rows.length+' records')}
+
+function submitVerifier(){
+ if(!rows.length){alert('Add beneficiary records first.');return}
+ markDuplicates();let bad=rows.filter(r=>r.state!=='VALID').length;if(bad){alert('Fix the '+bad+' record(s) marked NEEDS REVIEW or DUPLICATE first.');return}
+ if(!confirm(rows.length+' records will be submitted to the Verifier. Continue?'))return;
+ let prog=getProgram(),vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]'),existing=vb.find(b=>b.batch===batchNo);
+ let batch={batch:batchNo,file:currentFile||'Manual Entry',programId:prog.id,programName:prog.name,rows:rows.map(r=>({name:r.name,id:r.id,area:r.area,recordKey:r.recordKey})),status:existing&&existing.status==='RETURNED'?'RESUBMITTED':'FOR VERIFICATION',submittedAt:new Date().toLocaleString(),submittedDay:todayKey(),returnReason:''};
+ if(existing)Object.assign(existing,batch);else vb.unshift(batch);localStorage.setItem('encoderVerifierBatches',JSON.stringify(vb));
+ let all=JSON.parse(localStorage.getItem('antiPilaBeneficiaries')||'[]');
+ all=all.filter(v=>v.batch!==batchNo);
+ rows.forEach((r,i)=>all.push({name:r.name,id:r.id,area:r.area,batch:batchNo,programId:prog.id,programName:prog.name,recordKey:r.recordKey||makeKey(r.id,i),verifierStatus:batch.status,verified:false,released:false,queue:'—',source:'ENCODER'}));
+ localStorage.setItem('antiPilaBeneficiaries',JSON.stringify(all));
+ hist=hist.filter(h=>h.batch!==batchNo);hist.unshift({batch:batchNo,file:currentFile||'Manual Entry',program:prog.name,programId:prog.id,count:rows.length,valid:rows.length,review:0,status:batch.status==='RESUBMITTED'?'RESUBMITTED':'SUBMITTED TO VERIFIER',time:batch.submittedAt,day:todayKey()});
+ removeDraft(batchNo);saveAll();dirty=false;renderHistory();dashboard();
+ receipt.innerHTML='<div class="receipt"><span class="status ok">SUBMISSION RECEIPT</span><h2>'+e(batchNo)+'</h2><p><b>Program:</b> '+e(prog.name)+'</p><p><b>Beneficiaries:</b> '+rows.length+'</p><p><b>Encoder:</b> Demo Encoder</p><p><b>Date/Time:</b> '+e(batch.submittedAt)+'</p><p><b>Status:</b> '+e(batch.status)+'</p><button class="btn" onclick="window.print()">PRINT RECEIPT</button></div>';
+ summary.innerHTML='<div class="card"><span class="status ok">'+e(batch.status)+'</span><h3>'+e(currentFile||'Manual Entry')+'</h3><b>'+e(batchNo)+'</b><p class="muted">Locked and handed to Verifier.</p></div>';preview.innerHTML='';tools.style.display='none';log('Submitted '+batchNo+' to Verifier')
+}
+
+function renderDrafts(){
+ let vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]'),returned=vb.filter(b=>b.status==='RETURNED');
+ let combined=drafts.map(d=>({kind:'DRAFT',data:d})).concat(returned.map(b=>({kind:'RETURNED',data:b})));
+ draftsEl=document.getElementById('drafts');
+ draftsEl.innerHTML=combined.length?combined.map(o=>'<div class="card resume"><div><span class="status '+(o.kind==='RETURNED'?'bad':'')+'">'+o.kind+'</span><b style="display:block;margin-top:6px">'+e(o.data.batch)+'</b><span class="muted">'+e(o.data.programName||'')+' • '+(o.data.rows||[]).length+' records'+(o.data.returnReason?'<br>Reason: '+e(o.data.returnReason):'')+'</span></div><button class="btn gold" onclick="resumeBatch(\''+e(o.data.batch)+'\',\''+o.kind+'\')">OPEN</button></div>').join(''):'<div class="empty">No draft or returned batches.</div>'
+}
+function resumeBatch(batch,kind){
+ let source;if(kind==='RETURNED'){let vb=JSON.parse(localStorage.getItem('encoderVerifierBatches')||'[]');source=vb.find(b=>b.batch===batch)}else source=drafts.find(d=>d.batch===batch);
+ if(!source)return;batchNo=source.batch;currentFile=source.file||'Returned Batch';currentType=source.type||'BATCH';rows=(source.rows||[]).map((r,i)=>Object.assign({},r,{recordKey:r.recordKey||makeKey(r.id,i)}));
+ let idx=programs.findIndex(p=>p.id===source.programId);if(idx>=0)program.selectedIndex=idx;
+ mapping.innerHTML='';receipt.innerHTML='';showCurrent();dirty=true;window.scrollTo({top:0,behavior:'smooth'});log('Resumed '+batch)
+}
+function renderHistory(){
+ history.innerHTML=hist.length?hist.slice(0,30).map(h=>'<div class="card"><span class="status '+(h.status==='SUBMITTED TO VERIFIER'||h.status==='RESUBMITTED'?'ok':'')+'">'+e(h.status)+'</span><b style="display:block;margin-top:6px">'+e(h.batch||'BATCH')+' • '+e(h.file)+'</b><span class="muted">'+e(h.program)+'<br>'+h.count+' records • '+(h.valid||0)+' valid • '+(h.review||0)+' review<br>'+e(h.time)+'</span></div>').join(''):'<div class="empty">No Encoder history yet.</div>'
+}
+function downloadErrors(){
+ let bad=rows.filter(r=>r.state!=='VALID');if(!bad.length){alert('No error records to export.');return}
+ let csv='Status,Name,ID,Area\n'+bad.map(r=>[r.state,r.name,r.id,r.area].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),a=document.createElement('a');
+ a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download=(batchNo||'batch')+'-errors.csv';a.click();URL.revokeObjectURL(a.href)
+}
+window.addEventListener('beforeunload',ev=>{if(dirty){ev.preventDefault();ev.returnValue=''}});
+function resetDemo(){
+ if(!confirm('Clear Encoder draft/history demo data? Submitted payout records will stay unless you reset the whole browser storage.'))return;
+ rows=[];hist=[];acts=[];drafts=[];batchNo='';currentFile='';currentType='';localStorage.removeItem('encoderDemoActs');localStorage.removeItem('encoderDemoHistory');localStorage.removeItem('encoderDrafts');summary.innerHTML='';preview.innerHTML='';receipt.innerHTML='';mapping.innerHTML='';tools.style.display='none';saveAll();renderHistory();dashboard()
+}
+program.addEventListener('change',()=>{if(batchNo){saveDraft();showCurrent()}});
+renderHistory();dashboard();
+</script>
+</body>
+</html>
