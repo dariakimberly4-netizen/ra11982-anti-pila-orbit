@@ -39,8 +39,9 @@
 <div style="font-size:38px">📊</div>
 <b>PDF • XLSX • XLS • CSV</b><br><br>
 <input class="realfile" id="file" type="file" accept=".pdf,.xlsx,.xls,.csv,application/pdf,text/csv,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-<label class="picker" for="file">CHOOSE FILE FROM PHONE</label>
-<p class="muted">Excel/CSV uses field mapping. PDF text extraction runs locally in your browser.</p>
+<button class="picker mobile" type="button" id="browseBtn">CHOOSE FILE FROM PHONE</button>
+<div id="filePicked" class="muted">No file selected.</div>
+<p class="muted">Tap the file field above or the button. Excel/CSV uses field mapping. PDF text extraction runs locally in your browser.</p>
 </div>
 
 <div id="mapping"></div>
